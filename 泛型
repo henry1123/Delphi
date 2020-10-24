@@ -1,0 +1,48 @@
+泛型 (Generic)
+
+Delphi 2009 之後加入
+
+
+sample code:
+```delphi
+TMyStack = class (TObject)
+private
+   FElements: array of Integer; // 用來存放元素的陣列.
+   FElementCount: integer;
+public
+   function push(element: integer) : integer; // 可以傳回 push進去的元素放在什麼位置.
+   function pop: integer; // 直接傳回最後一個元素.
+
+   property count: integer; read FElementCount;
+
+   constructor Create(); ovevrride; reintroduce;
+   destructor Destory(); override;
+end;
+這樣修改以後，push跟pop方法裡面也都要有相對應的程式修改，例如在 Create的時候，就要先對 FElementCount 做初始化，push 跟 pop 方法裡面，也得調整長度：
+
+==================================================================
+constructor TMyStack.Create();
+begin
+   inherited Create();
+
+  FElementCount := 0; // 初始化，把元素個數設為 0;
+  setLength(FElements, 0); // 初始化，把陣列長度也設為 0;
+end;
+
+function TMyStack.push(element: integer) : integer;
+begin
+    Inc(self.FElementCount); // 把元素個數加一
+    setLength(FElements, self.FElementCount); // 把陣列長度也多加一個
+
+   self.FElements[self.FElementCount -1] := element; // 把要 push 的元素放在新增的
+                                                                                    //  陣列位置上
+end;
+
+function TMyStack.pop: integer;
+begin
+    Result := self.FElements[self.FElementCount -1]; // 把最後一個元素回傳.
+
+    Dec(self.FElementCount); // 把元素個數減一
+    setLength(FElements, self.FElementCount); // 把陣列長度也多減掉一個
+end;
+```
